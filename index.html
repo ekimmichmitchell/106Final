@@ -1,0 +1,158 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Game  !</title>
+    <script src="lib/phaser.min.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var game = new Phaser.Game(800, 490, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+
+
+    function preload() {
+        game.load.image('background2', 'img/town2.jpg');
+        game.load.image('dirt','img/dirt.png');
+        game.load.image('grass', 'img/grass.png');
+        game.load.image('school', 'img/school.png');
+        game.load.image('player', 'img/trashCan.png');
+
+    }
+
+    function create() {
+
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        //change width (third parameter) to change width of world bounds.
+        this.game.world.setBounds(0, 0, 1000, this.game.height);
+
+
+        this.background = game.add.tileSprite(0,0,this.game.world.width,game.height,'background2');
+
+
+        var variableFont = { font: "30px Arial", fill: "#ffffff",align: "center", weight: "bolder"};
+
+        title = game.add.text(10, 0 , 'Get To School', {fontSize: '55px', fill: '#ffffff'});
+        title.fixedToCamera = true;
+        title.cameraOffset.set(10,0);
+
+        instruction = game.add.text(10, 200 , 'You woke up late for class!', variableFont);
+        instruction2 = game.add.text(10, 240 , 'You now have to rush to get to school as fast as you can', variableFont);
+        instruction3 = game.add.text(10, 280 , 'Be careful of any obstacles that might be in your way', variableFont);
+        instruction4 = game.add.text(10, 320 , 'Use your arrow keys to move the guy around', variableFont);
+        instruction5 = game.add.text(10, 360 , 'To start the game, move get the guy to school', variableFont);
+
+
+        //reach the school to end the game
+        endLevel = game.add.group();
+        endLevel.enableBody = true;
+        var school = endLevel.create(game.world.width-250, 70, 'school');
+        school.body.immovable = true;
+
+
+        //create the bottom ground
+        this.grass = this.add.tileSprite(0,this.game.height-100,this.game.world.width,50,'grass');
+        this.ground = this.add.tileSprite(0,this.game.height-50,this.game.world.width,50,'dirt');
+        //enable physics on the player and ground
+        this.game.physics.arcade.enable(this.ground);
+        //so player can walk on ground
+        this.ground.body.immovable = true;
+        this.ground.body.allowGravity = false;
+
+
+
+        // Create the player
+        player = game.add.sprite(32, game.world.height - 170, 'player');
+        game.physics.arcade.enable(player);
+        player.body.bounce.y = 0.4;
+        player.body.gravity.y = 600;
+        player.body.collideWorldBounds = true;
+
+    }
+
+
+
+
+
+
+
+    function update() {
+
+        var playerTouchesGround = game.physics.arcade.collide(player, this.ground);
+        var playerTouchesSchool = game.physics.arcade.collide(player, endLevel);
+
+
+        if(playerTouchesSchool){
+
+            var wonText = game.add.text(game.camera.x + (game.width/2)-200, game.camera.y+ (game.height/2)-50, 'Lets Move On!', {fontSize: '50px', fill: '#ffffff'});
+            game.paused = true;
+
+            removeText();
+            location.href = "one.html";
+//            window.open('two.html', "_self");
+        }
+
+
+        //allow the player to move around with the keyboard
+        cursors = game.input.keyboard.createCursorKeys();
+        //  Reset the players movement
+        player.body.velocity.x = 0;
+
+        if (cursors.left.isDown) {
+            //  Move to the left
+            player.body.velocity.x = -400;
+
+            player.animations.play('left');
+            game.camera.x -=6;
+
+        } else if (cursors.right.isDown) {
+            //  Move to the right
+            player.body.velocity.x = 400;
+            player.animations.play('right');
+            game.camera.x += 6;
+
+        } else if(cursors.down.isDown && !player.body.touching.down){
+
+            //move player down
+            player.body.velocity.y = 400;
+
+        }else {
+            player.animations.stop();
+
+        }
+
+        //  Player can jump if they are touching the ground.
+        if (cursors.up.isDown && player.body.touching.down && playerTouchesGround) {
+            player.body.velocity.y = -450;
+        }
+
+    }
+
+
+    function removeText (){
+        instruction.destroy();
+        instruction2.destroy();
+        instruction3.destroy();
+        instruction4.destroy();
+        instruction5.destroy();
+
+    }
+
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

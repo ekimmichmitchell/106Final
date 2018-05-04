@@ -1,0 +1,346 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Game  ! - TWO</title>
+    <script src="lib/phaser.min.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var game = new Phaser.Game(800, 490, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+
+    var currentTime = 0;
+    var timer;
+    var pauseBtn;
+
+
+    function preload() {
+    game.load.image('background', 'img/background2.jpg');
+    game.load.image('dirt','img/dirt.png');
+    game.load.image('grass', 'img/grass.png');
+    game.load.image('school', 'img/school.png');
+    game.load.image('player', 'img/trashCan.png');
+    game.load.image('house2', 'img/house2.png');
+    game.load.image('pauseBtn', 'img/pauseBtn.png');
+    game.load.image('car', 'img/car.png');
+    game.load.image('car2', 'img/car2.png');
+    game.load.image('dogWalker', 'img/dogWalking.png');
+
+    }
+
+    function create() {
+
+        //this is so the world moves
+        //change width (third parameter) to change width of world bounds.
+        this.game.world.setBounds(0, 0, 4500, this.game.height);
+
+        //adds physics into game
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        this.background = game.add.tileSprite(0,0,this.game.world.width,game.height,'background');
+
+
+        wonText = game.add.text(100, game.world.height - 200, 'Level Two', {fontSize: '65px', fill: '#ffffff'});
+        game.time.events.add(2000, removeText, this);
+
+        //pause button
+        pauseBtn = game.add.sprite(740, 16, 'pauseBtn');
+        pauseBtn.scale.set(0.5,0.5);
+        pauseBtn.inputEnabled = true;
+        //event listening for pause button
+        pauseBtn.events.onInputDown.add(pauseOrUnPause, game);
+        pauseBtn.fixedToCamera = true;
+        pauseBtn.cameraOffset.set(740,16);
+
+
+
+        //reach the school to end the game
+        endLevel = game.add.group();
+        endLevel.enableBody = true;
+        var school = endLevel.create(game.world.width-450, 70, 'school');
+        school.body.immovable = true;
+
+
+
+        //create the bottom ground
+        this.grass = this.add.tileSprite(0,this.game.height-100,this.game.world.width,50,'grass');
+        this.ground = this.add.tileSprite(0,this.game.height-50,this.game.world.width,50,'dirt');
+        //enable physics on the player and ground
+        this.game.physics.arcade.enable(this.ground);
+        //so player can walk on ground
+        this.ground.body.immovable = true;
+        this.ground.body.allowGravity = false;
+
+
+
+        //create the obstacles for the game
+        obstacle = game.add.group();
+        //  We will enable physics for any object that is created in this group
+        obstacle.enableBody = true;
+
+
+        spawnDogWalker();
+        game.time.events.loop(7000, spawnDogWalker, this);
+
+
+        houseObstacle = obstacle.create(700, 190, 'house2');
+        houseObstacle.scale.setTo(0.4,0.4);
+        houseObstacle.anchor.x -= 0.5;
+        houseObstacle.anchor.y -= 0.0;
+
+
+        houseObstacle2 = obstacle.create(3200, 190, 'house2');
+        houseObstacle2.scale.setTo(0.4,0.4);
+        houseObstacle2.anchor.x -= 0.5;
+        houseObstacle2.anchor.y -= 0.0;
+
+
+        carObstacle2 = obstacle.create(3800, 55, 'car2');
+        carObstacle2.scale.setTo(0.1,0.1);
+//        game.physics.arcade.enable(carObstacle2);
+//        carObstacle2.body.gravity.y = 50;
+
+
+
+        //create the platforms for the user to jump on
+        platforms = game.add.group();
+        platforms.enableBody = true;
+
+            //platform one
+        var platform1Height = game.world.height -200;
+        var platform1Width = 550;
+        var platform1 = platforms.create(platform1Width, platform1Height, 'dirt');
+        var platform2 = platforms.create(platform1Width+50, platform1Height, 'dirt');
+        var platform3 = platforms.create(platform1Width + 100, platform1Height, 'dirt');
+        var platform4 = platforms.create(platform1Width + 150, platform1Height, 'dirt');
+        //this is make the platforms move if you touch them
+        platform1.body.immovable = true;
+        platform2.body.immovable = true;
+        platform3.body.immovable = true;
+        platform4.body.immovable = true;
+
+
+                //platform 2
+        var platform2Height = game.world.height -300;
+        var platform2Width = 1500;
+        var platform5 = platforms.create(platform2Width, platform2Height, 'dirt');
+        var platform6 = platforms.create(platform2Width+ 50, platform2Height, 'dirt');
+        var platform7 = platforms.create(platform2Width + 100, platform2Height, 'dirt');
+        var platform8 = platforms.create(platform2Width + 150,platform2Height, 'dirt');
+        var platform9= platforms.create(platform2Width + 200, platform2Height, 'dirt');
+        var platform10 = platforms.create(platform2Width + 250, platform2Height, 'dirt');
+        platform5.body.immovable = true;
+        platform6.body.immovable = true;
+        platform7.body.immovable = true;
+        platform8.body.immovable = true;
+        platform9.body.immovable = true;
+        platform10.body.immovable = true;
+
+
+            //platform 3 - this moves when user touches it
+        var platform3Height = game.world.height -350;
+        var platform3Width = 2050;
+        var platform11 = platforms.create( platform3Width , platform3Height, 'dirt');
+        var platform12 = platforms.create( platform3Width +50, platform3Height, 'dirt');
+        var platform13 = platforms.create( platform3Width +100,platform3Height, 'dirt');
+        var platform14 = platforms.create( platform3Width +150, platform3Height, 'dirt');
+        var platform15= platforms.create( platform3Width +200, platform3Height, 'dirt');
+        var platform16 = platforms.create( platform3Width +250, platform3Height, 'dirt');
+
+        platform11.body.immovable = true;
+        platform12.body.immovable = true;
+
+
+        //platform 4
+        var platform1Height = game.world.height -250;
+        var platform1Width = 3000;
+        var platform17 = platforms.create(platform1Width, platform1Height, 'dirt');
+        var platform18= platforms.create(platform1Width+50, platform1Height, 'dirt');
+        var platform19 = platforms.create(platform1Width + 100, platform1Height, 'dirt');
+        var platform20 = platforms.create(platform1Width + 150, platform1Height, 'dirt');
+        //this is make the platforms move if you touch them
+        platform17.body.immovable = true;
+        platform18.body.immovable = true;
+        platform19.body.immovable = true;
+        platform20.body.immovable = true;
+
+
+        //platform 5
+        var platform1Height = game.world.height -355;
+        var platform1Width = 3400;
+        var platform21 = platforms.create(platform1Width, platform1Height, 'dirt');
+        var platform22 = platforms.create(platform1Width+50, platform1Height, 'dirt');
+        var platform23 = platforms.create(platform1Width + 100, platform1Height, 'dirt');
+        var platform24 = platforms.create(platform1Width + 150, platform1Height, 'dirt');
+        var platform25 = platforms.create(platform1Width + 200, platform1Height, 'dirt');
+        var platform26 = platforms.create(platform1Width + 350, platform1Height, 'dirt');
+        var platform28 = platforms.create(platform1Width + 400, platform1Height, 'dirt');
+        var platform29 = platforms.create(platform1Width + 450, platform1Height, 'dirt');
+        var platform30 = platforms.create(platform1Width + 500, platform1Height, 'dirt');
+        var platform31 = platforms.create(platform1Width + 550, platform1Height, 'dirt');
+        var platform32 = platforms.create(platform1Width + 600, platform1Height, 'dirt');
+
+        var platform33 = platforms.create(platform1Width + 250, platform1Height, 'dirt');
+        var platform33 = platforms.create(platform1Width + 300, platform1Height, 'dirt');
+
+
+
+        //this is make the platforms move if you touch them
+        platform21.body.immovable = true;
+        platform22.body.immovable = true;
+        platform23.body.immovable = true;
+        platform24.body.immovable = true;
+        platform25.body.immovable = true;
+        platform26.body.immovable = true;
+
+        platform28.body.immovable = true;
+        platform29.body.immovable = true;
+        platform30.body.immovable = true;
+        platform31.body.immovable = true;
+        platform32.body.immovable = true;
+
+
+
+
+
+
+        // Create the player
+        player = game.add.sprite(32, game.world.height - 170, 'player');
+        //Give the player phsyics
+        game.physics.arcade.enable(player);
+        //  Player physics properties. Give the little guy a slight bounce.
+        player.body.bounce.y = 0.4;
+        player.body.gravity.y = 400;
+        player.body.collideWorldBounds = true;
+
+
+        var variableFont = { font: "30px Arial", fill: "#ffffff",align: "center"};
+
+        //Timer for how long the game goes (seconds)
+        timer = game.add.text(15, 16, "Timer: " + currentTime, variableFont);
+        game.time.events.loop(1000, updateTimer, this);
+        timer.fixedToCamera = true;
+        timer.cameraOffset.set(15,16);
+
+
+    }
+
+
+
+
+
+
+
+    function update() {
+
+
+//        var obstacleTouchesPlatform = game.physics.arcade.collide(obstacle, platforms);
+        var obstacleTouchesGround = game.physics.arcade.collide(obstacle, this.ground);
+
+        var playerTouchesPlatform = game.physics.arcade.collide(player, platforms);
+        var playerTouchesGround = game.physics.arcade.collide(player, this.ground);
+        var playerTouchesObstacle = game.physics.arcade.collide(player, obstacle);
+        var playerTouchesSchool = game.physics.arcade.collide(player, endLevel);
+
+        if(playerTouchesObstacle){
+            game.add.text(game.camera.x + (game.width/2)-100, game.camera.y+ (game.height/2)-50, 'Try Again!', {fontSize: '50px', fill: '#ffffff'});
+            game.paused = true;
+            window.open('two.html', "_self");
+        }
+
+        if(playerTouchesSchool){
+            var wonText = game.add.text(game.camera.x + (game.width/2)-100, game.camera.y+ (game.height/2)-50, 'Nice Job!!', {fontSize: '50px', fill: '#ffffff'});
+            game.paused = true;
+            window.open('three.html', "_self");
+        }
+
+
+
+        //allow the player to move around with the keyboard
+        cursors = game.input.keyboard.createCursorKeys();
+        //  Reset the players movement
+        player.body.velocity.x = 0;
+
+        if (cursors.left.isDown) {
+            //  Move to the left
+            player.body.velocity.x = -400;
+
+            player.animations.play('left');
+            game.camera.x -=6;
+
+        } else if (cursors.right.isDown) {
+            //  Move to the right
+            player.body.velocity.x = 400;
+            player.animations.play('right');
+            game.camera.x += 6;
+
+        } else if(cursors.down.isDown && !player.body.touching.down){
+
+            //move player down
+            player.body.velocity.y = 400;
+
+        }else {
+            player.animations.stop();
+
+        }
+
+        //  Player can jump if they are touching the ground.
+        if (cursors.up.isDown && player.body.touching.down && playerTouchesGround || cursors.up.isDown && player.body.touching.down && playerTouchesPlatform ) {
+            player.body.velocity.y = -450;
+        }
+
+    }
+
+
+    function pauseOrUnPause() {
+
+        game.paused = true;
+        var pausedText = game.add.text(game.camera.x + (game.width/2)-100, game.camera.y+ (game.height/2)-50, 'Paused!', {fontSize: '50px', fill: '#ffffff'});
+
+
+        // set event listener for user to tap screen
+        this.input.onDown.add(function(){
+            //remove the instructions
+            pausedText.destroy();
+            game.paused = false;
+
+        }, this);
+    }
+
+    function removeText (){
+        wonText.destroy();
+    }
+
+    function updateTimer() {
+        //increase current timer and set remaining time text
+        currentTime++;
+        timer.setText("Time: " + currentTime);
+    }
+
+
+
+
+    function spawnDogWalker() {
+
+            dogWalker = obstacle.create(1000, 300, 'dogWalker');
+            dogWalker.scale.setTo(0.2,0.2);
+            dogWalker.anchor.x -= 0.5;
+            dogWalker.anchor.y -= 0.0;
+            dogWalker.body.velocity.x = 100;
+
+    }
+
+
+
+
+
+</script>
+
+</body>
+</html>
