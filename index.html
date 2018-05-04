@@ -21,7 +21,8 @@
         game.load.image('dirt','img/dirt.png');
         game.load.image('grass', 'img/grass.png');
         game.load.image('school', 'img/school.png');
-        game.load.image('player', 'img/trashCan.png');
+//        game.load.image('player', 'img/trashCan.png');
+        game.load.image('player', 'img/pup.png');
 
     }
 
@@ -69,10 +70,13 @@
 
         // Create the player
         player = game.add.sprite(32, game.world.height - 170, 'player');
+//        player.scale.setTo(0.3,0.3);
         game.physics.arcade.enable(player);
         player.body.bounce.y = 0.4;
         player.body.gravity.y = 600;
         player.body.collideWorldBounds = true;
+        player.scale.setTo(0.4,0.4);
+
 
     }
 
@@ -110,6 +114,7 @@
 
             player.animations.play('left');
             game.camera.x -=6;
+
 
         } else if (cursors.right.isDown) {
             //  Move to the right

@@ -26,7 +26,9 @@
         game.load.image('dirt','img/dirt.png');
         game.load.image('grass', 'img/grass.png');
         game.load.image('school', 'img/school.png');
-        game.load.image('player', 'img/trashCan.png');
+//        game.load.image('player', 'img/trashCan.png');
+        game.load.image('player', 'img/pup.png');
+
         game.load.image('house2', 'img/house2.png');
         game.load.image('house', 'img/house.png');
         game.load.image('pauseBtn', 'img/pauseBtn.png');
@@ -189,6 +191,7 @@
         player.body.bounce.y = 0.4;
         player.body.gravity.y = 400;
         player.body.collideWorldBounds = true;
+        player.scale.setTo(0.4,0.4);
 
 
         var variableFont = { font: "30px Arial", fill: "#ffffff",align: "center"};
@@ -245,13 +248,13 @@
             player.body.velocity.x = -400;
 
             player.animations.play('left');
-            game.camera.x -=6;
+            game.camera.x -=6.5;
 
         } else if (cursors.right.isDown) {
             //  Move to the right
             player.body.velocity.x = 400;
             player.animations.play('right');
-            game.camera.x += 6;
+            game.camera.x += 6.5;
 
         } else if(cursors.down.isDown && !player.body.touching.down){
 
